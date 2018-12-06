@@ -5,31 +5,31 @@ import Home from './views/Home.vue';
 Vue.use(Router);
 
 export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'Home',
-      component: Home
-    },
-    {
-      path: '/detail/:id',
-      name: 'Detail',
-      component: () => import(/* webpackChunkName: "Detail" */ './views/Detail.vue')
-    },
-    {
-      path: '/user',
-      name: 'User',
-      component: () => import(/* webpackChunkName: "User" */ './views/User.vue')
-    },
-    {
-      path: '/login',
-      name: 'Login',
-      component: () => import(/* webpackChunkName: "Login" */ './views/Login.vue')
-    },
-    {
-      path: '/register',
-      name: 'Register',
-      component: () => import(/* webpackChunkName: "Register" */ './views/Register.vue')
-    },
-  ]
+    routes: [
+        {
+            path: '/',
+            name: 'Home',
+            component: Home
+        },
+        {
+            path: '/detail/:id',
+            name: 'Detail',
+            component: () => import(/* webpackChunkName: "Detail" */ './views/Detail.vue')
+        },
+        {
+            path: '/user',
+            name: 'User',
+            component: () => import(/* webpackChunkName: "User" */ './views/User.vue')
+        },
+        {
+            path: '/login',
+            name: 'Login',
+            component: () => import(/* webpackChunkName: "Login" */ './views/Login.vue')
+        },
+        {
+            path: '/register',
+            name: 'Register',
+            component: () => import(/* webpackChunkName: "Register" */ './views/Register.vue')
+        },
+    ]
 })
