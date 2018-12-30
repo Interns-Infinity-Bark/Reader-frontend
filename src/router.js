@@ -12,7 +12,7 @@ export default new Router({
             component: Home
         },
         {
-            path: '/detail/:id',
+            path: '/detail/:link',
             name: 'Detail',
             component: () => import(/* webpackChunkName: "Detail" */ './views/Detail.vue')
         },
@@ -30,6 +30,11 @@ export default new Router({
             path: '/register',
             name: 'Register',
             component: () => import(/* webpackChunkName: "Register" */ './views/Register.vue')
+        },
+        {
+            path: '/bookInfo/:id',
+            name: 'BookInfo',
+            component: () => import(/* webpackChunkName: "BookInfo" */ './views/BookInfo.vue')
         },
     ]
 })
