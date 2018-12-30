@@ -32,12 +32,12 @@ export const getCategoryDetail = async () => {
 /**
  * 根据分类获取图书列表
  * @param params: {
- *     gender(male: 男生, female: 女生, press: 出版, picture: 漫画),
- *     type(hot: 热门, new: 新书, repulation: 好评, over: 完结, month: 包月),
+ *     gender?(male: 男生, female: 女生, press: 出版, picture: 漫画),
+ *     type?(hot: 热门, new: 新书, over: 完结),
  *     major,
- *     minor,
- *     start,
- *     limit
+ *     minor?,
+ *     start?,
+ *     limit?
  * }
  */
 export const getBooksByCategory = async (params) => {
@@ -83,19 +83,11 @@ export const getChaptersByBookId = async (bookId) => {
 };
 
 /**
- * 获取图书章节(根据图书正版源ID)
- * @param genuineSourceId
+ * 获取图书章节(根据图书源ID)
+ * @param sourceId
  */
-export const getChaptersByGenuineSourceId = async (genuineSourceId) => {
-    return (await fetch(`/api/btoc/${genuineSourceId}?view=chapters`)).json();
-};
-
-/**
- * 获取图书章节(根据图书混合源ID)
- * @param mixSourceId
- */
-export const getChaptersByMixSourceId = async (mixSourceId) => {
-    return (await fetch(`/api/atoc/${mixSourceId}?view=chapters`)).json();
+export const getChaptersBySourceId = async (sourceId) => {
+    return (await fetch(`/api/atoc/${sourceId}?view=chapters`)).json();
 };
 
 /**
