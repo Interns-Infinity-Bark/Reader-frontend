@@ -137,5 +137,5 @@ export const getLatestChapter = async (bookIds) => {
     const params = {};
     params.view = 'updated';
     params.id = bookIds.join(',');
-    return (await fetch(`/api/book?${stringify(params)}`)).json();
+    return (await fetch(`/api05iye5/book?${stringify(params)}`)).json();
 };
