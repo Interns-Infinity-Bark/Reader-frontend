@@ -22,6 +22,13 @@ module.exports = {
                 pathRewrite: {
                     '^/chapterup': ''
                 }
+            },
+            '/statics': {
+                target: 'https://statics.zhuishushenqi.com',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/statics': ''
+                }
             }
         }
     }
