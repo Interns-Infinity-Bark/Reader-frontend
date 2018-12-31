@@ -1,18 +1,19 @@
 <template>
     <div class="container">
         <van-cell :border="false">
-            <h2 style="margin-bottom: 8px;">{{detail.title}}</h2>
-            <p style="margin-top: 0; font-size: 12px; color: #666;">{{detail.author}}</p>
-            <div v-html="xss(detail.content)"></div>
-            <p v-if="isLoggedIn()" style="color: #999; font-size: 12px;">
-                <span v-if="fav" @click="toggleFav"><van-icon name="star"></van-icon> 已收藏</span>
-                <span v-else @click="toggleFav"><van-icon name="star-o"></van-icon> 收藏</span>
-            </p>
+            <div style="text-align: center">
+                <h2>{{this.detail.title}}</h2>
+            </div>
+            <div v-if="isVip">
+                <div style="text-align: center">本章是收费章节, 暂时无法阅读</div>
+            </div>
+            <div v-else>
+                <div v-html="content"></div>
+            </div>
             <p>{{comments.length}} 条评论</p>
             <van-list finished>
                 <van-cell v-for="(item, index) in comments" :key="index"
-                          :title="item.author" :value="moment(item.createdAt).fromNow()"
-                >
+                          :title="item.author" :value="moment(item.createdAt).fromNow()">
                     <template slot="title">
                         <p style="margin-top: 0; margin-bottom: 0;">{{item.author}}</p>
                         <pre style="margin-top: 8px; margin-bottom: 0;">{{item.content}}</pre>
@@ -28,51 +29,102 @@
             <van-button v-if="isLoggedIn()" type="primary" block @click="addComment">发表评论</van-button>
             <van-button v-else type="default" block @click="toLogin">登录以发表评论</van-button>
         </van-cell>
+
+        <div class="content">
+            <van-row>
+                <van-col span="8">
+                    <van-button v-if="index - 1 >= 0" size="small"
+                                style="margin-top: 16px; margin-bottom: 16px; width: 100%;"
+                                @click="toLink(index - 1)">
+                        上一章
+                    </van-button>
+                    <van-button v-else size="small" disabled="disabled"
+                                style="margin-top: 16px; margin-bottom: 16px; width: 100%;">
+                        上一章
+                    </van-button>
+                </van-col>
+                <van-col span="8" offset="8">
+                    <van-button v-if="index + 1 <= chapterList.length - 1" size="small"
+                                style="margin-top: 16px; margin-bottom: 16px; width: 100%;"
+                                @click="toLink(index + 1)">
+                        下一章
+                    </van-button>
+                    <van-button v-else size="small" disabled="disabled"
+                                style="margin-top: 16px; margin-bottom: 16px; width: 100%;">
+                        下一章
+                    </van-button>
+                </van-col>
+            </van-row>
+        </div>
     </div>
 </template>
 
 <script>
-    import {detail} from '../mock/';
-    import {isLoggedIn, setSession} from '../utils';
+    import {isLoggedIn} from '../utils';
     import xss from 'xss';
     import moment from 'moment';
+    import {getChapter, getChaptersBySourceId} from "../spider";
 
     export default {
         name: 'Detail',
         data() {
             return {
-                detail: detail[~~this.$route.params.id] || {},
+                bookId: this.$route.params.bookId,
+                sourceId: this.$route.params.sourceId,
+                index: +this.$route.params.index,
+                link: this.$route.params.link,
+                chapterList: [],
+                isVip: false,
+                detail: {
+                    ok: true,
+                },
                 comments: [],
                 commentContent: '',
-                fav: !!(window.__session.fav || {})[~~this.$route.params.id],
-            }
-        },
-        computed: {
-            id() {
-                return ~~this.$route.params.id;
-            },
-        },
-        watch: {
-            id() {
-                this.detail = detail[this.id] || {};
-                this.getComments();
-                this.commentContent = '';
-                this.fav = !!(window.__session.fav || {})[this.id];
             }
         },
         created() {
             moment.locale('zh-cn');
         },
-        mounted() {
+        computed: {
+            content() {
+                return '\u3000\u3000' + xss(this.detail.cpContent).replace(/[\t|\u3000]/g, '')
+                    .replace(/[\u21b5\n]+/g, '<br/>\u3000\u3000');
+            }
+        },
+        watch: {
+            '$route.params': async function (newParams) {
+                this.bookId = newParams.bookId;
+                this.sourceId = newParams.sourceId;
+                this.index = +newParams.index;
+                this.link = newParams.link;
+                const Info = await getChapter(this.link);
+                this.isVip = Info.chapter.isVip;
+                this.detail = Info.chapter;
+                this.chapterId = Info.chapter.id;
+                this.getComments();
+                this.commentContent = '';
+            }
+        },
+        async mounted() {
+            this.chapterList = (await getChaptersBySourceId(this.sourceId)).chapters;
+            const Info = await getChapter(this.link);
+            this.isVip = Info.chapter.isVip;
+            this.detail = Info.chapter;
+            this.chapterId = Info.chapter.id;
             this.getComments();
         },
         methods: {
-            isLoggedIn,
             xss,
+            toLink(index) {
+                const finalLink = `/Detail/${encodeURIComponent(this.bookId)}/${encodeURIComponent(this.sourceId)}/${encodeURIComponent(index)}/${encodeURIComponent((this.chapterList[index] || {}).link)}`;
+                this.$router.replace(finalLink);
+                window.scrollTo(0, 0);
+            },
+            isLoggedIn,
             moment,
             getComments() {
                 const allComments = JSON.parse(localStorage.getItem('comments')) || {};
-                this.comments = allComments[this.id] || [];
+                this.comments = allComments[this.chapterId] || [];
             },
             addComment() {
                 const comment = {
@@ -82,18 +134,12 @@
                 };
                 this.comments.push(comment);
                 const allComments = JSON.parse(localStorage.getItem('comments')) || {};
-                allComments[this.id] = this.comments;
+                allComments[this.chapterId] = this.comments;
                 localStorage.setItem('comments', JSON.stringify(allComments));
                 this.commentContent = '';
             },
             toLogin() {
                 this.$router.push('/login');
-            },
-            toggleFav() {
-                this.fav = !this.fav;
-                setSession({
-                    fav: {...window.__session.fav, [this.id]: this.fav},
-                });
             },
         },
     };
