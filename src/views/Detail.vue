@@ -5,7 +5,7 @@
                 <div style="text-align: center">
                     <p>{{this.detail.title}}</p>
                 </div>
-                <div v-html="xss(detail.body)"></div>
+                <div v-html="content"></div>
             </div>
             <div v-else>
                 <p>文章为收费源，暂时无法阅读</p>
@@ -37,6 +37,10 @@
             <!--<van-button v-if="isLoggedIn()" type="primary" block @click="addComment">发表评论</van-button>-->
             <!--<van-button v-else type="default" block @click="toLogin">登录以发表评论</van-button>-->
         </van-cell>
+
+        <div class="content">
+            <van-button size="large" style="margin-bottom: 16px;">下一章，更开花</van-button>
+        </div>
     </div>
 </template>
 
@@ -76,6 +80,11 @@
         },*/
         created() {
             moment.locale('zh-cn');
+        },
+        computed: {
+            content() {
+                return xss(this.detail.cpContent).replace(/[\u21b5\n]/g, '<br />');
+            }
         },
         async mounted() {
             const Info = await getChapter(this.link);

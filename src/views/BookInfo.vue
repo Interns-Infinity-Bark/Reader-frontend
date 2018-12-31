@@ -1,14 +1,28 @@
 <template>
     <div class="container">
-        <img v-bind:src="cover" alt="cover" height="60%" width="60%">
-        <p>{{bookInfo.title}}</p>
-        <p>{{bookInfo.author}}</p>
-        <p>评分：{{bookInfo.rating.score}}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;阅读人数：{{bookInfo.rating.count}}</p>
-        <b><h2>简介</h2></b>
-        <p>{{bookInfo.longIntro}}</p>
-        <p>更新于{{bookInfo.updated}}</p>
+        <div class="content">
+            <van-row>
+                <van-col span="8" style="padding: 8px 16px;">
+                    <img v-bind:src="cover" alt="cover" style="width: 100%;">
+                </van-col>
+                <van-col span="16">
+                    <h2>{{bookInfo.title}}</h2>
+                    <p>作者：{{bookInfo.author}}</p>
+                    <p>评分：{{score}}{{score > 9 ? '（屌）' : ''}}&nbsp;&nbsp;&nbsp;&nbsp;阅读人数：{{bookInfo.rating.count}}</p>
+                </van-col>
+                <van-col span="24">
+                    <b><h3 class="section-header">简介</h3></b>
+                    <p>{{bookInfo.longIntro}}</p>
+                    <p style="color: #acacac; font-size: 12px;">更新于 {{updated}}</p>
+                </van-col>
+            </van-row>
+        </div>
 
         <!--{{chapterList}}-->
+
+        <div class="content">
+            <b><h3 class="section-header">章节列表</h3></b>
+        </div>
 
         <van-list finished>
             <van-cell v-for="(item) in chapterList" :key="item.link"
@@ -23,7 +37,9 @@
 </template>
 
 <script>
-    import {getBook, getChaptersByBookId, getChaptersByMixSourceId, getMixSource} from "../spider";
+    import {getBook, getChaptersBySourceId, getMixSource} from "../spider";
+    import moment from 'moment';
+    import _ from 'lodash';
 
     export default {
         name: "BookInfo",
@@ -38,13 +54,21 @@
                 chapterList: [],
             }
         },
+        computed: {
+            updated() {
+                return moment(this.bookInfo.updated).fromNow();
+            },
+            score() {
+                return +_.get(this, 'bookInfo.rating.score', '').toString().split('').splice(0, 3).join('');
+            }
+        },
         async mounted() {
             this.bookInfo = await getBook(this.bookID);
             if (this.bookInfo.cover) {
                 this.cover = '/statics' + this.bookInfo.cover;
             }
-            const mixSourceId = (await getMixSource(this.bookID))[2]._id;
-            this.chapterList = (await getChaptersByMixSourceId(mixSourceId)).chapters;
+            const mixSourceId = (await getMixSource(this.bookID))[0]._id;
+            this.chapterList = (await getChaptersBySourceId(mixSourceId)).chapters;
         },
         methods: {
             formatLink(link) {
@@ -55,5 +79,7 @@
 </script>
 
 <style scoped>
-
+.section-header {
+    margin-bottom: 4px;
+}
 </style>

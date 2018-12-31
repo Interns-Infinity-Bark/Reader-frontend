@@ -12,6 +12,8 @@
 </template>
 
 <script>
+    import moment from 'moment';
+
     export default {
         name: 'app',
         data() {
@@ -31,6 +33,7 @@
         },
         created() {
             window.__session = JSON.parse(localStorage.getItem('session')) || {};
+            moment.locale('zh-cn');
         },
         methods: {
             goBack() {
