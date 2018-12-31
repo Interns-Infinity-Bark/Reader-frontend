@@ -39,7 +39,14 @@
         </van-cell>
 
         <div class="content">
-            <van-button size="large" style="margin-bottom: 16px;">下一章，更开花</van-button>
+            <van-row>
+                <van-col span="8">
+                    <van-button v-if="index - 1 >= 0" size="small" style="margin-bottom: 16px; width: 100%;" @click="toLink(index - 1)">上一章，正式开机</van-button>
+                </van-col>
+                <van-col span="8" offset="8">
+                    <van-button v-if="index + 1 <= chapterList.length - 1" size="small" style="margin-bottom: 16px; width: 100%;" @click="toLink(index + 1)">下一章，更开花</van-button>
+                </van-col>
+            </van-row>
         </div>
     </div>
 </template>
@@ -48,13 +55,17 @@
     /*import {isLoggedIn, setSession} from '../utils';*/
     import xss from 'xss';
     import moment from 'moment';
-    import {getChapter} from "../spider";
+    import {getBook, getChaptersBySourceId, getMixSource, getChapter} from "../spider";
 
     export default {
         name: 'Detail',
         data() {
             return {
+                bookId: this.$route.params.bookId,
+                sourceId: this.$route.params.sourceId,
+                index: +this.$route.params.index,
                 link: this.$route.params.link,
+                chapterList: [],
                 status: false,
                 detail:{
                     ok:true,
@@ -86,7 +97,20 @@
                 return xss(this.detail.cpContent).replace(/[\u21b5\n]/g, '<br />');
             }
         },
+        watch: {
+            '$route.params': async function (newParams) {
+                this.bookId = newParams.bookId;
+                this.sourceId = newParams.sourceId;
+                this.index = +newParams.index;
+                this.link = newParams.link;
+                // this.chapterList = (await getChaptersBySourceId(this.sourceId)).chapters;
+                const Info = await getChapter(this.link);
+                this.status = Info.ok;
+                this.detail = Info.chapter;
+            }
+        },
         async mounted() {
+            this.chapterList = (await getChaptersBySourceId(this.sourceId)).chapters;
             const Info = await getChapter(this.link);
             this.status = Info.ok;
             this.detail = Info.chapter;
@@ -94,6 +118,11 @@
         },
         methods: {
             xss,
+            toLink(index) {
+                const finalLink = `/Detail/${encodeURIComponent(this.bookId)}/${encodeURIComponent(this.sourceId)}/${encodeURIComponent(index)}/${encodeURIComponent((this.chapterList[index] || {}).link)}`;
+                this.$router.replace(finalLink);
+                window.scrollTo(0, 0);
+            },
             /*isLoggedIn,
             moment,
             getComments() {

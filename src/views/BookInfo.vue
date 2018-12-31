@@ -25,9 +25,9 @@
         </div>
 
         <van-list finished>
-            <van-cell v-for="(item) in chapterList" :key="item.link"
+            <van-cell v-for="(item, index) in chapterList" :key="item.link"
                       :title="item.title"
-                      is-link :to="formatLink(item.link)"
+                      is-link :to="formatLink(index, item.link)"
                       clickable
                       size="large">
             </van-cell>
@@ -49,6 +49,7 @@
                 bookInfo: {
                     rating: {},
                 },
+                sourceId: null,
                 // todo
                 cover: 'default book cover url',
                 chapterList: [],
@@ -67,12 +68,12 @@
             if (this.bookInfo.cover) {
                 this.cover = '/statics' + this.bookInfo.cover;
             }
-            const mixSourceId = (await getMixSource(this.bookID))[0]._id;
-            this.chapterList = (await getChaptersBySourceId(mixSourceId)).chapters;
+            this.sourceId = (await getMixSource(this.bookID))[0]._id;
+            this.chapterList = (await getChaptersBySourceId(this.sourceId)).chapters;
         },
         methods: {
-            formatLink(link) {
-                return `/Detail/${encodeURIComponent(link)}`;
+            formatLink(index, link) {
+                return `/Detail/${encodeURIComponent(this.bookID)}/${encodeURIComponent(this.sourceId)}/${encodeURIComponent(index)}/${encodeURIComponent(link)}`;
             },
         },
     }
