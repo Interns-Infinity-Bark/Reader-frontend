@@ -2,23 +2,23 @@
     <div class="container">
         <div class="content">
             <van-row>
-                <van-col span="8" style="padding: 8px 16px;">
+                <van-col span="12" style="padding: 8px 16px;">
                     <img v-bind:src="cover" alt="cover" style="width: 100%;">
                 </van-col>
-                <van-col span="16">
+                <van-col span="12">
                     <h2>{{bookInfo.title}}</h2>
-                    <p>作者：{{bookInfo.author}}</p>
-                    <p>评分：{{score}}{{score > 9 ? '（屌）' : ''}}&nbsp;&nbsp;&nbsp;&nbsp;阅读人数：{{bookInfo.rating.count}}</p>
+                    <p>作者: {{bookInfo.author}}</p>
+                    <p>分类: {{bookInfo.majorCate}}</p>
+                    <p>字数: {{bookInfo.wordCount}}</p>
+                    <p>评分: {{score}}</p>
                 </van-col>
                 <van-col span="24">
                     <b><h3 class="section-header">简介</h3></b>
                     <p>{{bookInfo.longIntro}}</p>
-                    <p style="color: #acacac; font-size: 12px;">更新于 {{updated}}</p>
+                    <p style="color: #acacac; font-size: 12px;">最近更新于 {{updated}}</p>
                 </van-col>
             </van-row>
         </div>
-
-        <!--{{chapterList}}-->
 
         <div class="content">
             <b><h3 class="section-header">章节列表</h3></b>
@@ -37,6 +37,7 @@
 </template>
 
 <script>
+    import logo from '../assets/logo.png';
     import {getBook, getChaptersBySourceId, getMixSource} from "../spider";
     import moment from 'moment';
     import _ from 'lodash';
@@ -46,12 +47,9 @@
         data() {
             return {
                 bookID: this.$route.params.id,
-                bookInfo: {
-                    rating: {},
-                },
+                bookInfo: {},
                 sourceId: null,
-                // todo
-                cover: 'default book cover url',
+                cover: logo,
                 chapterList: [],
             }
         },
@@ -80,7 +78,7 @@
 </script>
 
 <style scoped>
-.section-header {
-    margin-bottom: 4px;
-}
+    .section-header {
+        margin-bottom: 4px;
+    }
 </style>
