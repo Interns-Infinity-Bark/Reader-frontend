@@ -9,7 +9,7 @@
         </van-cell-group>
         <van-button type="primary" size="large" block style="margin-top: 30px;" @click="login">登录</van-button>
         <div class="content" style="margin-top: 12px;">
-            还没有账号？
+            还没有账号?
             <router-link to="/register">注册</router-link>
         </div>
     </div>
@@ -40,7 +40,6 @@
                     setSession({
                         username: this.username,
                         expiresAt: Date.now() + 24 * 60 * 60 * 1000,
-                        fav: {},
                     });
                     return this.$router.push('/');
                 }

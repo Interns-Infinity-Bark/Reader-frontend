@@ -10,7 +10,7 @@
         </van-cell-group>
         <van-button type="primary" size="large" block style="margin-top: 30px;" @click="register">注册</van-button>
         <div class="content" style="margin-top: 12px;">
-            已经有账号了？
+            已经有账号了?
             <router-link to="/login">登录</router-link>
         </div>
     </div>
@@ -56,7 +56,6 @@
                 setSession({
                     username: this.username,
                     expiresAt: Date.now() + 24 * 60 * 60 * 1000,
-                    fav: {},
                 });
                 this.$dialog.alert({
                     message: '注册成功',
