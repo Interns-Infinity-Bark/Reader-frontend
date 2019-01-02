@@ -24,7 +24,7 @@
         data() {
             return {
                 username: window.__session.username,
-                logo
+                logo,
             };
         },
         methods: {
@@ -33,7 +33,6 @@
                 setSession({
                     username: '',
                     expires: 0,
-                    fav: {},
                 });
                 this.$forceUpdate();
             },

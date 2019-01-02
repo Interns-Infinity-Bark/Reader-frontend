@@ -13,17 +13,15 @@
                     <p>评分: {{score}}</p>
                 </van-col>
                 <van-col span="24">
-                    <b><h3 class="section-header">简介</h3></b>
-                    <p>{{bookInfo.longIntro}}</p>
+                    <h3 class="section-header">简介</h3>
+                    <div v-html="longIntro"></div>
                     <p style="color: #acacac; font-size: 12px;">最近更新于 {{updated}}</p>
                 </van-col>
             </van-row>
         </div>
-
         <div class="content">
-            <b><h3 class="section-header">章节列表</h3></b>
+            <h3 class="section-header">章节列表</h3>
         </div>
-
         <van-list finished>
             <van-cell v-for="(item, index) in chapterList" :key="item.link"
                       :title="item.title"
@@ -32,13 +30,13 @@
                       size="large">
             </van-cell>
         </van-list>
-
     </div>
 </template>
 
 <script>
     import logo from '../assets/logo.png';
     import {getBook, getChaptersBySourceId, getMixSource} from "../spider";
+    import xss from 'xss';
     import moment from 'moment';
     import _ from 'lodash';
 
@@ -54,11 +52,15 @@
             }
         },
         computed: {
+            score() {
+                return +_.get(this, 'bookInfo.rating.score', '').toString().slice(0, 3);
+            },
+            longIntro() {
+                return '\u3000\u3000' + xss(this.bookInfo.longIntro).replace(/[\t|\u3000]/g, '')
+                    .replace(/[\u21b5\n]+/g, '<br/>\u3000\u3000');
+            },
             updated() {
                 return moment(this.bookInfo.updated).fromNow();
-            },
-            score() {
-                return +_.get(this, 'bookInfo.rating.score', '').toString().split('').splice(0, 3).join('');
             }
         },
         async mounted() {
@@ -71,7 +73,7 @@
         },
         methods: {
             formatLink(index, link) {
-                return `/Detail/${encodeURIComponent(this.bookID)}/${encodeURIComponent(this.sourceId)}/${encodeURIComponent(index)}/${encodeURIComponent(link)}`;
+                return `/detail/${encodeURIComponent(this.bookID)}/${encodeURIComponent(this.sourceId)}/${encodeURIComponent(index)}/${encodeURIComponent(link)}`;
             },
         },
     }

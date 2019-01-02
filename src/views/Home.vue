@@ -1,6 +1,6 @@
 <template>
     <div class="container">
-        <van-search placeholder="搜索📚" v-model="searchInput" @search="onSearch" @clear="onClear"/>
+        <van-search placeholder="搜索📚" v-model="searchInput" @search="onSearch" @clear="onClear"></van-search>
         <van-list finished>
             <van-cell v-for="item in books" :key="item._id"
                       :title="item.title" :label="item.author"
