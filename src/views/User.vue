@@ -3,7 +3,7 @@
         <div class="logo">
             <img :src="logo" alt="Logo"/>
         </div>
-        <div v-if="isLoggedIn()" style="margin-top: 100px;">
+        <div v-if="isloggedin" style="margin-top: 100px;">
             <p style="text-align: center">你好，{{username}}</p>
             <van-button type="default" block @click="logout" style="margin-top: 45px;">登出</van-button>
         </div>
@@ -17,24 +17,32 @@
 
 <script>
     import logo from '../assets/logo.png';
-    import {isLoggedIn, setSession} from '../utils';
+    import {get} from '../utils';
+    import {getSession} from "../spider";
 
     export default {
         name: "User",
         data() {
             return {
-                username: window.__session.username,
+                username: '',
+                isloggedin: false,
                 logo,
             };
         },
+        async mounted() {
+            const res = await getSession();
+            if (res.status === 'ok') {
+                this.username = res.data.user.username;
+                this.isloggedin = true;
+            }
+        },
         methods: {
-            isLoggedIn,
-            logout() {
-                setSession({
-                    username: '',
-                    expires: 0,
-                });
-                this.$forceUpdate();
+            async logout() {
+                const res = await get(`/reader/logout`);
+                alert(res.message)
+                if (res.status === 'ok') {
+                    return this.$router.push('/');
+                }
             },
             toLogin() {
                 this.$router.push('/login');

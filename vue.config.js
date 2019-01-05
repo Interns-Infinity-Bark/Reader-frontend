@@ -2,6 +2,13 @@ module.exports = {
     baseUrl: '/',
     devServer: {
         proxy: {
+            '/reader': {
+                target: 'http://123.206.15.249:3000',
+                changeOrigin: true,
+                pathRewrite: {
+                    '^/reader': ''
+                }
+            },
             '/api05iye5': {
                 target: 'https://api05iye5.zhuishushenqi.com',
                 changeOrigin: true,

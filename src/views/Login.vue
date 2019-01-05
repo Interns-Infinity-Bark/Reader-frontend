@@ -17,7 +17,7 @@
 
 <script>
     import logo from '../assets/logo.png';
-    import {setSession} from '../utils';
+    import {post} from '../utils';
 
     export default {
         name: "Login",
@@ -29,23 +29,19 @@
             };
         },
         methods: {
-            login() {
-                if (!this.username || !this.password) {
-                    return this.$dialog.alert({
-                        message: '请输入用户名和密码',
-                    });
-                }
-                const users = JSON.parse(localStorage.getItem('users')) || {};
-                if (users[this.username] && users[this.username].password === this.password) {
-                    setSession({
-                        username: this.username,
-                        expiresAt: Date.now() + 24 * 60 * 60 * 1000,
-                    });
+            async login() {
+                const data = await post(`reader/login`, {
+                    username: this.username,
+                    password: this.password,
+                });
+                if (data.status === 'ok') {
+                    alert('登录成功');
                     return this.$router.push('/');
                 }
-                this.$dialog.alert({
-                    message: '用户名或密码错误',
-                });
+                else if(data.message === "已登录"){
+                    alert('您已登录');
+                }
+                else alert(data.message);
             },
         }
     }

@@ -18,7 +18,7 @@
 
 <script>
     import logo from '../assets/logo.png';
-    import {setSession} from '../utils';
+    import {post} from '../utils';
 
     export default {
         name: "Register",
@@ -31,37 +31,18 @@
             };
         },
         methods: {
-            register() {
-                if (!this.username || !this.password || !this.confirmPassword) {
-                    return this.$dialog.alert({
-                        message: '请输入用户名和密码',
-                    });
-                }
-                if (this.password !== this.confirmPassword) {
-                    return this.$dialog.alert({
-                        message: '两次输入的密码不一致',
-                    });
-                }
-                const users = JSON.parse(localStorage.getItem('users')) || {};
-                if (users[this.username]) {
-                    return this.$dialog.alert({
-                        message: '该用户已被注册',
-                    });
-                }
-                users[this.username] = {
+            async register() {
+                const data = await post(`/reader/register`, {
                     username: this.username,
                     password: this.password,
-                };
-                localStorage.setItem('users', JSON.stringify(users));
-                setSession({
-                    username: this.username,
-                    expiresAt: Date.now() + 24 * 60 * 60 * 1000,
+                    confirmPassword: this.confirmPassword,
                 });
-                this.$dialog.alert({
-                    message: '注册成功',
-                }).then(() => {
+                if (data.status === 'ok') {
+                    alert('注册成功');
                     this.$router.push('/');
-                });
+                } else {
+                    alert(data.message);
+                }
             },
         }
     }

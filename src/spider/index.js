@@ -131,3 +131,7 @@ export const getLatestChapter = async (bookIds) => {
     params.id = bookIds.join(',');
     return (await fetch(`/api05iye5/book?${stringify(params)}`)).json();
 };
+
+export const getSession = async () => {
+    return (await fetch('/reader/')).json();
+};
