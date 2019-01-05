@@ -36,5 +36,10 @@ export default new Router({
             name: 'BookInfo',
             component: () => import(/* webpackChunkName: "BookInfo" */ './views/BookInfo.vue')
         },
+        {
+            path: '/admin',
+            name: 'Admin',
+            component: () => import(/* webpackChunkName: "Admin" */ './views/Admin.vue')
+        },
     ]
 })
