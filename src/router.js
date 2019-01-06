@@ -12,7 +12,7 @@ export default new Router({
             component: Home
         },
         {
-            path: '/detail/:bookId/:sourceId/:index/:link',
+            path: '/detail/:bookId/:index/:link',
             name: 'Detail',
             component: () => import(/* webpackChunkName: "Detail" */ './views/Detail.vue')
         },
@@ -35,6 +35,16 @@ export default new Router({
             path: '/bookInfo/:id',
             name: 'BookInfo',
             component: () => import(/* webpackChunkName: "BookInfo" */ './views/BookInfo.vue')
+        },
+        {
+            path: '/admin',
+            name: 'Admin',
+            component: () => import(/* webpackChunkName: "Admin" */ './views/Admin.vue')
+        },
+        {
+            path: '/admin/login',
+            name: 'AdminLogin',
+            component: () => import(/* webpackChunkName: "Admin" */ './views/AdminLogin.vue')
         },
     ]
 })

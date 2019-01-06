@@ -1,18 +1,13 @@
 <template>
     <div class="container">
         <div class="logo">
-            <img :src="logo" alt="logo"/>
+            <img :src="logo" alt="Logo"/>
         </div>
         <van-cell-group>
             <van-field v-model="username" label="用户名" placeholder="请输入用户名"></van-field>
             <van-field v-model="password" label="密码" placeholder="请输入密码" type="password"></van-field>
-            <van-field v-model="confirmPassword" label="确认密码" placeholder="请再次输入密码" type="password"></van-field>
         </van-cell-group>
-        <van-button type="primary" size="large" block style="margin-top: 30px;" @click="register">注册</van-button>
-        <div class="content" style="margin-top: 12px;">
-            已经有账号了?
-            <router-link to="/login">登录</router-link>
-        </div>
+        <van-button type="primary" size="large" block style="margin-top: 30px;" @click="login">登录</van-button>
     </div>
 </template>
 
@@ -21,29 +16,31 @@
     import {post} from '../utils';
 
     export default {
-        name: "Register",
+        name: "AdminLogin",
         data() {
             return {
                 username: '',
                 password: '',
-                confirmPassword: '',
                 logo,
             };
         },
         methods: {
-            async register() {
-                const data = await post(`/reader/register`, {
+            async login() {
+                const data = await post(`reader/admin/login`, {
                     username: this.username,
                     password: this.password,
-                    confirmPassword: this.confirmPassword,
                 });
                 if (data.status === 'ok') {
-                    this.$store.dispatch('getUserSession');
-                    alert('注册成功');
-                    this.$router.push('/');
-                } else {
-                    alert(data.message);
+                    this.$store.dispatch('getAdminSession').then(() => {
+                        alert('登录成功');
+                        return this.$router.push('/admin');
+                    });
                 }
+                else if(data.message === "已登录"){
+                    alert('您已登录');
+                    return this.$router.push('/admin');
+                }
+                else alert(data.message);
             },
         }
     }

@@ -15,11 +15,10 @@ export const getRankType = async () => {
 };
 
 /**
- * 获取排行榜
- * @param rankId(_id: 周榜ID, monthRank: 月榜ID, totalRank: 总榜ID)
+ * 获取图书列表
  */
-export const getRank = async (rankId) => {
-    return (await fetch(`/api/ranking/${rankId}`)).json();
+export const getBooks = async () => {
+    return (await fetch(`/reader/books`)).json();
 };
 
 /**
@@ -49,7 +48,7 @@ export const getBooksByCategory = async (params) => {
  * @param bookId
  */
 export const getBook = async (bookId) => {
-    return (await fetch(`/api/book/${bookId}`)).json();
+    return (await fetch(`/reader/book/${bookId}`)).json();
 };
 
 /**
@@ -79,7 +78,7 @@ export const getMixSource = async (bookId) => {
  * @param bookId
  */
 export const getChaptersByBookId = async (bookId) => {
-    return (await fetch(`/api/mix-atoc/${bookId}?view=chapters`)).json();
+    return (await fetch(`/reader/book/${bookId}/chapters`)).json();
 };
 
 /**
@@ -95,7 +94,7 @@ export const getChaptersBySourceId = async (sourceId) => {
  * @param link: 章节地址
  */
 export const getChapter = async (link) => {
-    return (await fetch(`/chapterup/chapter/${link}`)).json();
+    return (await fetch(`/reader/chapter/${link}`)).json();
 };
 
 /**
@@ -117,8 +116,8 @@ export const autoCompleteQueries = async (query) => {
  * 模糊搜索
  * @param query
  */
-export const fuzzySearch = async (query) => {
-    return (await fetch(`/api/book/fuzzy-search?query=${query}`)).json();
+export const fuzzySearch = async (title) => {
+    return (await fetch(`/reader/books?title=${title}`)).json();
 };
 
 /**
@@ -130,4 +129,16 @@ export const getLatestChapter = async (bookIds) => {
     params.view = 'updated';
     params.id = bookIds.join(',');
     return (await fetch(`/api05iye5/book?${stringify(params)}`)).json();
+};
+
+export const getSession = async () => {
+    return (await fetch('/reader/')).json();
+};
+
+export const getChapterComments = async (chapterId) => {
+    return (await fetch(`/reader/chapter/${chapterId}/comments`)).json();
+};
+
+export const getUser = async (userId) => {
+    return (await fetch(`/reader/user/${userId}`)).json();
 };
