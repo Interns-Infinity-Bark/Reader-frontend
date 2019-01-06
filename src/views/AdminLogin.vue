@@ -31,8 +31,10 @@
                     password: this.password,
                 });
                 if (data.status === 'ok') {
-                    alert('登录成功');
-                    return this.$router.push('/admin');
+                    this.$store.dispatch('getAdminSession').then(() => {
+                        alert('登录成功');
+                        return this.$router.push('/admin');
+                    });
                 }
                 else if(data.message === "已登录"){
                     alert('您已登录');

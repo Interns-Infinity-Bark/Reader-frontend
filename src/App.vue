@@ -1,7 +1,10 @@
 <template>
     <div id="app">
         <van-nav-bar v-if="$route.path !== '/' && $route.path !== '/user'"
-                     fixed title="追风云阅读" left-text="返回" left-arrow @click-left="goBack()"></van-nav-bar>
+                     fixed title="追风云阅读"
+                     left-text="返回" left-arrow @click-left="goBack"
+                     :right-text="$route.path.startsWith('/admin') && isAdminLoggedIn ? '登出' : ''" @click-right="logoutAdmin"
+        ></van-nav-bar>
         <van-nav-bar v-else fixed title="追风云阅读"></van-nav-bar>
         <router-view/>
         <van-tabbar v-model="active">
@@ -12,6 +15,7 @@
 </template>
 
 <script>
+    import { mapGetters } from 'vuex';
     import moment from 'moment';
 
     export default {
@@ -20,7 +24,11 @@
             return {
                 active: 0,
                 isIndex: true,
+                isAdmin: false,
             };
+        },
+        computed: {
+            ...mapGetters(['isUserLoggedIn', 'isAdminLoggedIn']),
         },
         watch: {
             '$route.path'(newValue) {
@@ -32,12 +40,17 @@
             },
         },
         created() {
-            window.__session = JSON.parse(localStorage.getItem('session')) || {};
             moment.locale('zh-cn');
+            this.$store.dispatch('getUserSession');
+            this.$store.dispatch('getAdminSession');
         },
         methods: {
             goBack() {
                 history.back();
+            },
+            logoutAdmin() {
+                this.$store.dispatch('logoutAdmin');
+                this.$router.push('/');
             },
         },
     }

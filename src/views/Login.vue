@@ -35,6 +35,7 @@
                     password: this.password,
                 });
                 if (data.status === 'ok') {
+                    this.$store.dispatch('getUserSession');
                     alert('登录成功');
                     return this.$router.push('/');
                 }
