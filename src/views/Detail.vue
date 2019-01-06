@@ -10,7 +10,7 @@
             <van-list finished>
                 <van-cell v-for="(item, index) in comments" :key="index" :value="moment(item.createdAt).fromNow()">
                     <template slot="title">
-                        <p style="margin-top: 0; margin-bottom: 0;">{{item.author}}</p>
+                        <p style="margin-top: 0; margin-bottom: 0;">{{item.user.username}}</p>
                         <pre style="margin-top: 8px; margin-bottom: 0;">{{item.content}}</pre>
                     </template>
                 </van-cell>
@@ -18,10 +18,10 @@
         </van-cell>
         <van-field v-model="commentContent"
                    type="textarea"
-                   :placeholder="isLoggedIn() ? '评论内容' : '未登录, 无法发表评论'"
-                   :disabled="!isLoggedIn()"></van-field>
+                   :placeholder="isloggedin ? '评论内容' : '未登录, 无法发表评论'"
+                   :disabled="!isloggedin"></van-field>
         <van-cell>
-            <van-button v-if="isLoggedIn()" type="primary" block @click="addComment">
+            <van-button v-if="isloggedin" type="primary" block @click="addComment">
                 发表评论
             </van-button>
             <van-button v-else type="default" block @click="toLogin">
@@ -58,19 +58,19 @@
 </template>
 
 <script>
-    import {isLoggedIn} from '../utils';
     import xss from 'xss';
     import moment from 'moment';
-    import {getChapter, getChaptersBySourceId} from "../spider";
+    import {getChapter, getChapterComments, getChaptersByBookId, getSession, getUser} from "../spider";
+    import {post} from "../utils";
 
     export default {
         name: 'Detail',
         data() {
             return {
                 bookId: this.$route.params.bookId,
-                sourceId: this.$route.params.sourceId,
                 index: +this.$route.params.index,
                 link: this.$route.params.link,
+                isloggedin: false,
                 chapterList: [],
                 chapter: {},
                 comments: [],
@@ -82,50 +82,55 @@
         },
         computed: {
             content() {
-                return '\u3000\u3000' + xss(this.chapter.cpContent).replace(/[\t|\u3000]/g, '')
+                return '\u3000\u3000' + xss(this.chapter.content).replace(/[\t|\u3000]/g, '')
                     .replace(/[\u21b5\n]+/g, '<br/>\u3000\u3000');
             }
         },
         watch: {
             '$route.params': async function (newParams) {
                 this.bookId = newParams.bookId;
-                this.sourceId = newParams.sourceId;
                 this.index = +newParams.index;
                 this.link = newParams.link;
-                this.chapterList = (await getChaptersBySourceId(this.sourceId)).chapters;
-                this.chapter = (await getChapter(this.link)).chapter;
-                this.getComments();
+                this.chapterList = (await getChaptersByBookId(this.bookId)).data.chapters;
+                this.chapter = (await getChapter(this.link)).data.chapter;
+                this.comments = await this.getComments();
                 this.commentContent = '';
             }
         },
         async mounted() {
-            this.chapterList = (await getChaptersBySourceId(this.sourceId)).chapters;
-            this.chapter = (await getChapter(this.link)).chapter;
-            this.getComments();
+            const res = await getSession();
+            if (res.status === 'ok') {
+                this.isloggedin = true;
+            }
+            this.chapterList = (await getChaptersByBookId(this.bookId)).data.chapters;
+            this.chapter = (await getChapter(this.link)).data.chapter;
+            this.comments = await this.getComments();
         },
         methods: {
             xss,
             toLink(index) {
-                this.$router.replace(`/detail/${encodeURIComponent(this.bookId)}/${encodeURIComponent(this.sourceId)}/${encodeURIComponent(index)}/${encodeURIComponent((this.chapterList[index] || {}).link)}`);
+                this.$router.replace(`/detail/${encodeURIComponent(this.bookId)}/${encodeURIComponent(index)}/${encodeURIComponent((this.chapterList[index] || {}).id)}`);
                 window.scrollTo(0, 0);
             },
-            isLoggedIn,
             moment,
-            getComments() {
-                const allComments = JSON.parse(localStorage.getItem('comments')) || {};
-                this.comments = allComments[this.chapter.id] || [];
+            async getComments() {
+                const comments = (await getChapterComments(this.link)).data.comments;
+                comments.forEach(async comment => {
+                    comment.user = (await getUser(comment.user)).data.user;
+                });
+                return comments;
             },
-            addComment() {
-                const comment = {
-                    author: window.__session.username,
+            async addComment() {
+                const data = await post(`reader/comment`, {
+                    chapterId: this.link,
                     content: this.commentContent,
-                    createdAt: Date.now(),
-                };
-                this.comments.push(comment);
-                const allComments = JSON.parse(localStorage.getItem('comments')) || {};
-                allComments[this.chapter.id] = this.comments;
-                localStorage.setItem('comments', JSON.stringify(allComments));
+                });
+                if (data.status !== 'ok') {
+                    alert(data.message);
+                }
                 this.commentContent = '';
+
+                this.comments = await this.getComments();
             },
             toLogin() {
                 this.$router.push('/login');

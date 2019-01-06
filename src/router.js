@@ -12,7 +12,7 @@ export default new Router({
             component: Home
         },
         {
-            path: '/detail/:bookId/:sourceId/:index/:link',
+            path: '/detail/:bookId/:index/:link',
             name: 'Detail',
             component: () => import(/* webpackChunkName: "Detail" */ './views/Detail.vue')
         },

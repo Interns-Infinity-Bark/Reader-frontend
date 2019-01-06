@@ -2,9 +2,9 @@
     <div class="container">
         <van-search placeholder="搜索📚" v-model="searchInput" @search="onSearch" @clear="onClear"></van-search>
         <van-list finished>
-            <van-cell v-for="item in books" :key="item._id"
+            <van-cell v-for="item in books" :key="item.id"
                       :title="item.title" :label="item.author"
-                      is-link :to="formatLink(item._id)"
+                      is-link :to="formatLink(item.id)"
                       clickable
                       size="large"></van-cell>
         </van-list>
@@ -12,7 +12,7 @@
 </template>
 
 <script>
-    import {getRank, fuzzySearch} from "../spider";
+    import {fuzzySearch, getBooks} from "../spider";
 
     export default {
         name: 'Home',
@@ -23,8 +23,8 @@
             }
         },
         async mounted() {
-            const res = await getRank('54d42d92321052167dfb75e3');
-            this.books = res.ranking.books;
+            const res = await getBooks();
+            this.books = res.data.books;
         },
         methods: {
             formatLink(id) {
@@ -36,11 +36,11 @@
                     return;
                 }
                 const res = await fuzzySearch(this.searchInput);
-                this.books = res.books;
+                this.books = res.data.books;
             },
             async onClear() {
-                const res = await getRank('54d42d92321052167dfb75e3');
-                this.books = res.ranking.books;
+                const res = await getBooks();
+                this.books = res.data.books;
             }
         },
     };

@@ -1,8 +1,3 @@
-export function setSession(session) {
-    window.__session = {...window.__session, ...session};
-    localStorage.setItem('session', JSON.stringify(window.__session));
-}
-
 export function request(method, url, data) {
     const options = method === 'GET' ? {} : {
         body: data ? JSON.stringify(data) : '',
