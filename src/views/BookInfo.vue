@@ -59,7 +59,7 @@
                     .replace(/[\u21b5\n]+/g, '<br/>\u3000\u3000');
             },
             updated() {
-                return moment(this.bookInfo.updated).fromNow();
+                return moment(this.bookInfo.updatedAt).fromNow();
             }
         },
         async mounted() {
