@@ -3,7 +3,7 @@ module.exports = {
     devServer: {
         proxy: {
             '/reader': {
-                target: 'http://123.206.15.249:3000',
+                target: 'http://localhost:3000',
                 changeOrigin: true,
                 pathRewrite: {
                     '^/reader': ''
