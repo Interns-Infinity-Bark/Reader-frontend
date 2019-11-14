@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { get } from './utils';
+import {get} from './utils';
 
 Vue.use(Vuex);
 
@@ -32,28 +32,28 @@ export default new Vuex.Store({
         },
     },
     actions: {
-        async getUserSession({ commit }) {
+        async getUserSession({commit}) {
             const ret = await get('/reader/');
             if (ret.status === 'ok') {
                 commit('setUserSession', ret.data.user);
             }
             return ret.data;
         },
-        async getAdminSession({ commit }) {
+        async getAdminSession({commit}) {
             const ret = await get('/reader/admin/');
             if (ret.status === 'ok') {
                 commit('setAdminSession', ret.data.user);
             }
             return ret.data;
         },
-        async logoutUser({ commit }) {
+        async logoutUser({commit}) {
             const ret = await get('/reader/logout');
             if (ret.status === 'ok') {
                 commit('clearUserSession');
             }
             return ret.data;
         },
-        async logoutAdmin({ commit }) {
+        async logoutAdmin({commit}) {
             const ret = await get('/reader/admin/logout');
             if (ret.status === 'ok') {
                 commit('clearAdminSession');

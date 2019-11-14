@@ -115,9 +115,9 @@
             moment,
             async getComments() {
                 const comments = (await getChapterComments(this.link)).data.comments;
-                comments.forEach(async comment => {
+                for (const comment of comments) {
                     comment.user = (await getUser(comment.user)).data.user;
-                });
+                }
                 return comments;
             },
             async addComment() {

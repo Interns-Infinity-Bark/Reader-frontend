@@ -35,12 +35,10 @@
                         alert('登录成功');
                         return this.$router.push('/admin');
                     });
-                }
-                else if(data.message === "已登录"){
+                } else if (data.message === "已登录") {
                     alert('您已登录');
                     return this.$router.push('/admin');
-                }
-                else alert(data.message);
+                } else alert(data.message);
             },
         }
     }

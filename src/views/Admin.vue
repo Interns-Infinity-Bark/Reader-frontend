@@ -7,7 +7,7 @@
                 <template slot="right-icon">
                     <span style="color: #aaa;">可用</span>
                     <van-switch v-model="user.isActive" size="20px" style="margin: 0 12px 0 4px;"
-                                @change="handleUserActiveChange($event, user.id)" />
+                                @change="handleUserActiveChange($event, user.id)"></van-switch>
                     <van-button type="danger" size="mini" @click="handleDeleteUser(user.id)">删除</van-button>
                 </template>
             </van-cell>
@@ -16,9 +16,9 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
+    import {mapGetters} from 'vuex';
     import {del, get, put} from "../utils";
-    import { Toast, Dialog } from 'vant';
+    import {Dialog, Toast} from 'vant';
 
     export default {
         name: "Admin",
@@ -58,7 +58,7 @@
                 this.fetchData();
             },
             async handleUserActiveChange(isActive, userId) {
-                const ret = await put(`/reader/admin/${isActive ? 'enableUser' : 'disableUser'}`, { userId });
+                const ret = await put(`/reader/admin/${isActive ? 'enableUser' : 'disableUser'}`, {userId});
                 if (ret.status !== 'ok') {
                     Toast.fail(ret.message || '操作失败');
                 }
@@ -67,7 +67,7 @@
                 Dialog.confirm({
                     title: '是否确认删除此用户？'
                 }).then(async () => {
-                    const ret = await del('/reader/admin/deleteUser', { userId });
+                    const ret = await del('/reader/admin/deleteUser', {userId});
                     if (ret.status !== 'ok') {
                         Toast.fail(ret.message || '操作失败');
                     } else {

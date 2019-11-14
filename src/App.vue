@@ -3,7 +3,8 @@
         <van-nav-bar v-if="$route.path !== '/' && $route.path !== '/user'"
                      fixed title="追风云阅读"
                      left-text="返回" left-arrow @click-left="goBack"
-                     :right-text="$route.path.startsWith('/admin') && isAdminLoggedIn ? '登出' : ''" @click-right="logoutAdmin"
+                     :right-text="$route.path.startsWith('/admin') && isAdminLoggedIn ? '登出' : ''"
+                     @click-right="logoutAdmin"
         ></van-nav-bar>
         <van-nav-bar v-else fixed title="追风云阅读"></van-nav-bar>
         <router-view/>
@@ -15,7 +16,7 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
+    import {mapGetters} from 'vuex';
     import moment from 'moment';
 
     export default {

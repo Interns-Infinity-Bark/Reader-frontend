@@ -38,7 +38,7 @@
                     confirmPassword: this.confirmPassword,
                 });
                 if (data.status === 'ok') {
-                    this.$store.dispatch('getUserSession');
+                    await this.$store.dispatch('getUserSession');
                     alert('注册成功');
                     this.$router.push('/');
                 } else {

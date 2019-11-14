@@ -39,7 +39,7 @@
         methods: {
             async logout() {
                 const res = await get(`/reader/logout`);
-                alert(res.message)
+                alert(res.message);
                 if (res.status === 'ok') {
                     return this.$router.push('/');
                 }

@@ -114,7 +114,7 @@ export const autoCompleteQueries = async (query) => {
 
 /**
  * 模糊搜索
- * @param query
+ * @param title
  */
 export const fuzzySearch = async (title) => {
     return (await fetch(`/reader/books?title=${title}`)).json();
