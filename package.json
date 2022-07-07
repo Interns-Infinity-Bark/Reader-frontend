@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
-    "moment": "^2.22.2",
+    "moment": "^2.29.4",
     "query-string": "^6.2.0",
     "vant": "^2.1.8",
     "vue": "^2.5.17",
